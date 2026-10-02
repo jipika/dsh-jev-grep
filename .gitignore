@@ -1,0 +1,4 @@
+# runtime state (settings.json holds the API key — never commit it)
+node_modules/
+*.log
+.DS_Store

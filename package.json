@@ -1,0 +1,44 @@
+{
+  "name": "dsh-jev-grep",
+  "version": "0.1.0",
+  "description": "Search-flood adjudication for DeepSeek Harness: a jev_search tool that runs ripgrep and pipes every hit through TypeSafe Jev's typed judgments (noul/choice) so the model reads ~30 calibrated rows instead of hundreds; a flood nudge on grep results; provider url/key/model fully configurable; degrades to plain grep behavior whenever the endpoint is unreachable. Host-half only, zero npm dependencies, cross-platform (Win/mac/Linux).",
+  "license": "MIT",
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "test-self.mjs",
+    "test-runtime.mjs",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --check lib/index.js && node test-self.mjs && node test-runtime.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jipika/dsh-jev-grep.git"
+  },
+  "homepage": "https://github.com/jipika/dsh-jev-grep#readme",
+  "bugs": {
+    "url": "https://github.com/jipika/dsh-jev-grep/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "jev",
+    "typesafe",
+    "search",
+    "grep",
+    "ripgrep",
+    "context-engineering"
+  ]
+}
