@@ -99,14 +99,42 @@ if (!key || !__test.findRg(__test.DEFAULTS)) {
 // ---- flood nudge hook (no key needed) ----
 {
   const nudge = hooks["tools/post-execute"][0];
-  const big = { content: [{ type: "text", text: Array.from({ length: 200 }, (_, i) => `f${i}.ts:${i}: match line`).join("\n") }] };
-  const out1 = await nudge({ tool: { name: "grep" } }, big, async () => big);
-  ok("nudge fires on 200-line grep", out1.additionalContexts?.[0]?.text?.includes("jev_search"), JSON.stringify(out1).slice(0, 120));
+  const bigText = Array.from({ length: 200 }, (_, i) => `f${i}.ts:${i}: match line`).join("\n");
+  const big = { content: [{ type: "text", text: bigText }] };
+
+  // fires: nudge lands in content[0] AND additionalContexts; exec.name is the real field.
+  const out1 = await nudge({ name: "grep" }, big, async () => big);
+  ok("nudge fires on 200-line grep (exec.name)", out1.content?.[0]?.text?.includes("jev_search"), JSON.stringify(out1).slice(0, 120));
+  ok("nudge also in additionalContexts", out1.additionalContexts?.[0]?.text?.includes("jev_search"), JSON.stringify(out1).slice(0, 120));
+  ok("nudge preserves original content", out1.content?.[1]?.text === bigText, "content tail lost");
+
+  // REGRESSION: line-count from the ORIGINAL result, not the compressed downstream.
+  // save-token/pruner replace downstream with a short stub; original still 200 lines -> must fire.
+  const stub = { content: [{ type: "text", text: "[save-token #abcd compressed: 200 lines -> 30]" }] };
+  const out1b = await nudge({ name: "grep" }, big, async () => stub);
+  ok("nudge fires when downstream is compressed stub", out1b.content?.[0]?.text?.includes("jev_search"), JSON.stringify(out1b).slice(0, 140));
+
+  // exec.tool.name shape still supported (belt-and-suspenders).
+  const out1c = await nudge({ tool: { name: "grep" } }, big, async () => big);
+  ok("nudge fires on exec.tool.name shape", out1c.content?.[0]?.text?.includes("jev_search"));
+
+  // silent on small result.
   const small = { content: [{ type: "text", text: "a:1: x\nb:2: y\n" }] };
-  const out2 = await nudge({ tool: { name: "grep" } }, small, async () => small);
-  ok("nudge silent on small result", !out2.additionalContexts);
-  const out3 = await nudge({ tool: { name: "read" } }, big, async () => big);
-  ok("nudge ignores non-grep tools", !out3.additionalContexts);
+  const out2 = await nudge({ name: "grep" }, small, async () => small);
+  ok("nudge silent on small result", !out2.additionalContexts && out2 === small);
+
+  // ignores non-grep tools.
+  const out3 = await nudge({ name: "read" }, big, async () => big);
+  ok("nudge ignores non-grep tools", out3 === big);
+
+  // skips a blocked downstream (kind guard).
+  const blocked = { kind: "block", content: [{ type: "text", text: "no" }] };
+  const out4 = await nudge({ name: "grep" }, big, async () => blocked);
+  ok("nudge skips blocked downstream", out4 === blocked);
+
+  // mcp-prefixed grep name matches too.
+  const out5 = await nudge({ name: "mcp__fs__grep" }, big, async () => big);
+  ok("nudge fires on mcp__*__grep", out5.content?.[0]?.text?.includes("jev_search"));
 }
 
 console.log(fail ? `\n${fail} FAILED, ${skip} skipped` : `\nALL PASS (${skip} skipped)`);
