@@ -1,5 +1,6 @@
 {
   "name": "dsh-jev-grep",
+  "icon": "./assets/icon.svg",
   "version": "0.1.0",
   "description": "Search-flood adjudication for DeepSeek Harness: a jev_search tool that runs ripgrep and pipes every hit through TypeSafe Jev's typed judgments (noul/choice) so the model reads ~30 calibrated rows instead of hundreds; a flood nudge on grep results; provider url/key/model fully configurable; degrades to plain grep behavior whenever the endpoint is unreachable. Host-half only, zero npm dependencies, cross-platform (Win/mac/Linux).",
   "license": "MIT",

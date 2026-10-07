@@ -1,3 +1,7 @@
+<div align="center">
+  <img src="assets/icon.svg" width="72" alt="dsh-jev-grep icon">
+</div>
+
 # dsh-jev-grep
 
 > 搜索洪水的裁决层插件（DeepSeek Harness，host 半边，零 npm 依赖，跨平台 Win/mac/Linux）。
